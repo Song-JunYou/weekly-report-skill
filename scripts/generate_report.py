@@ -7,6 +7,7 @@ import os
 import sys
 import json
 import glob
+import re
 from datetime import datetime
 from openpyxl import load_workbook
 from openpyxl.styles import Alignment
@@ -15,7 +16,7 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 SKILL_DIR = os.path.dirname(SCRIPT_DIR)
 
 DEFAULT_TEMPLATE_PATH = os.path.join(SKILL_DIR, "templates", "赛仕科工作周报模板.xlsx")
-DEFAULT_OUTPUT_DIR = "/mnt/c/Users/OLIVER_SONG.AADDS/Desktop/周报/"
+DEFAULT_OUTPUT_DIR = os.path.join(os.path.expanduser("~"), "Desktop", "周报")
 
 
 def get_template_path():
@@ -28,7 +29,43 @@ def get_template_path():
 
 
 def get_output_dir():
-    return os.environ.get('WKR_OUTPUT_DIR', DEFAULT_OUTPUT_DIR)
+    output_dir = os.environ.get('WKR_OUTPUT_DIR', DEFAULT_OUTPUT_DIR)
+    return os.path.abspath(os.path.expanduser(output_dir))
+
+
+def normalize_saturation(saturation):
+    """统一饱和度格式，支持 0.9、90、90% 三种输入。"""
+    text = str(saturation).strip()
+    if text.endswith('%'):
+        return text
+
+    try:
+        value = float(text)
+    except ValueError:
+        return f"{text}%"
+
+    if 0 < value <= 1:
+        value *= 100
+
+    return f"{value:g}%"
+
+
+def format_period_suffix(period):
+    """从周期文本中提取起止日期并格式化为文件名后缀。"""
+    matches = re.findall(r'\d{4}[/-]\d{1,2}[/-]\d{1,2}', str(period))
+    if len(matches) < 2:
+        return datetime.now().strftime('%Y-%m-%d')
+
+    formatted = []
+    for date_text in matches[:2]:
+        normalized = date_text.replace('/', '-')
+        try:
+            date_value = datetime.strptime(normalized, '%Y-%m-%d')
+            formatted.append(date_value.strftime('%Y-%m-%d'))
+        except ValueError:
+            formatted.append(normalized)
+
+    return f"{formatted[0]}至{formatted[1]}"
 
 
 def calculate_saturation(last_week, this_week, next_week):
@@ -114,7 +151,7 @@ def fill_section(sheet, start_row, items, columns):
 
 def read_last_week_report():
     """读取最新的周报文件"""
-    pattern = os.path.join(OUTPUT_DIR, "赛仕科工作周报 - *.xlsx")
+    pattern = os.path.join(get_output_dir(), "赛仕科工作周报 - *.xlsx")
     files = glob.glob(pattern)
     if not files:
         return None
@@ -221,15 +258,15 @@ def generate_weekly_report(report_data):
     sat_row = sections['saturation_data']
     saturation = report_data.get('saturation', '')
     
-    if not saturation:
+    if saturation in (None, ''):
         auto_saturation = calculate_saturation(
             report_data.get('last_week', []),
             report_data.get('this_week', []),
             report_data.get('next_week', [])
         )
         saturation = f"{auto_saturation}%"
-    elif not str(saturation).endswith('%'):
-        saturation = f"{saturation}%"
+    else:
+        saturation = normalize_saturation(saturation)
     
     sheet.cell(row=sat_row, column=2, value=saturation)
     sheet.cell(row=sat_row, column=5, value=report_data.get('workload_desc', ''))
@@ -237,23 +274,12 @@ def generate_weekly_report(report_data):
     sheet.cell(row=sat_row + 1, column=5, value=report_data.get('other_notes', ''))
     
     period = report_data.get('period', '')
-    date_suffix = datetime.now().strftime('%Y-%m-%d')
-    if '-' in period:
-        parts = period.split('-')
-        if len(parts) == 2:
-            start_date = parts[0].strip().replace('/', '-')
-            end_date = parts[1].strip().replace('/', '-')
-            try:
-                start_dt = datetime.strptime(start_date, '%Y-%m-%d')
-                end_dt = datetime.strptime(end_date, '%Y-%m-%d')
-                date_suffix = f"{start_dt.strftime('%Y-%m-%d')}至{end_dt.strftime('%Y-%m-%d')}"
-            except ValueError:
-                date_suffix = f"{start_date}至{end_date}"
-        else:
-            date_suffix = datetime.now().strftime('%Y-%m-%d')
+    date_suffix = format_period_suffix(period)
     
     filename = f"赛仕科工作周报 - {report_data.get('name', 'OLIVER SONG 宋俊佑')} {date_suffix}.xlsx"
-    output_path = os.path.join(get_output_dir(), filename)
+    output_dir = get_output_dir()
+    os.makedirs(output_dir, exist_ok=True)
+    output_path = os.path.join(output_dir, filename)
     wb.save(output_path)
     return output_path
 
