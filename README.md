@@ -6,45 +6,9 @@
 
 ---
 
-## 功能特性
+## 🚀 快速开始
 
-- **对话式交互** —— 不需要记模板格式，告诉 AI "我这周做了什么" 就行
-- **智能填充** —— 自动将工作归类到「上周完成 / 本周重点 / 下周计划」三大板块
-- **自动评估饱和度** —— AI 根据工作量自动计算工作饱和度，最低保证 **85%**
-- **保留模板样式** —— 使用 `openpyxl` 在原模板上填充，**不破坏任何格式和公式**
-- **文件名智能命名** —— 自动使用「姓名 + 完整周期范围」，如 `2026-05-25至2026-05-29`
-- **协作人追踪** —— 主动追问每条工作的协作人，避免遗漏
-- **确认后生成** —— 收集完所有信息并给你完整预览，确认无误再生成文件
-
----
-
-## 一图看懂
-
-### 🔄 交互流程
-
-<img src="https://raw.githubusercontent.com/Song-JunYou/weekly-report-skill/main/docs/assets/workflow.png" alt="交互流程图" width="800"/>
-
-> 和 AI 聊 8 步，周报自动生成。不用记格式，不用手动填 Excel。
-
-### 🧠 饱和度怎么算的？
-
-<img src="https://raw.githubusercontent.com/Song-JunYou/weekly-report-skill/main/docs/assets/saturation.png" alt="饱和度计算逻辑" width="600"/>
-
-> AI 根据你的工作量自动评估，**最低保证 85%**，无需手动填写。
-
-### 🏗️ 项目架构
-
-<img src="https://raw.githubusercontent.com/Song-JunYou/weekly-report-skill/main/docs/assets/architecture.png" alt="项目架构图" width="700"/>
-
-> 用户 → AI 解析 → Python 脚本 → 填充模板 → 生成文件。全程保留 Excel 格式。
-
----
-
-## 快速开始
-
-### 1. 安装
-
-将本仓库克隆到 OpenCode 的 skills 目录：
+### 1. 安装（30 秒）
 
 ```bash
 # Linux/macOS
@@ -79,6 +43,40 @@ AI 会进入向导模式，按流程引导你：
 6. 完整预览，等你确认 "生成吧"
 7. 自动生成 Excel 文件到桌面
 ```
+
+---
+
+## 功能特性
+
+- **对话式交互** —— 不需要记模板格式，告诉 AI "我这周做了什么" 就行
+- **智能填充** —— 自动将工作归类到「上周完成 / 本周重点 / 下周计划」三大板块
+- **自动评估饱和度** —— AI 根据工作量自动计算工作饱和度，最低保证 **85%**
+- **保留模板样式** —— 使用 `openpyxl` 在原模板上填充，**不破坏任何格式和公式**
+- **文件名智能命名** —— 自动使用「姓名 + 完整周期范围」，如 `2026-05-25至2026-05-29`
+- **协作人追踪** —— 主动追问每条工作的协作人，避免遗漏
+- **确认后生成** —— 收集完所有信息并给你完整预览，确认无误再生成文件
+
+---
+
+## 一图看懂
+
+### 🔄 交互流程
+
+<img src="https://raw.githubusercontent.com/Song-JunYou/weekly-report-skill/main/docs/assets/workflow.png" alt="交互流程图" width="800"/>
+
+> 和 AI 聊 8 步，周报自动生成。不用记格式，不用手动填 Excel。
+
+### 🧠 饱和度怎么算的？
+
+<img src="https://raw.githubusercontent.com/Song-JunYou/weekly-report-skill/main/docs/assets/saturation.png" alt="饱和度计算逻辑" width="600"/>
+
+> AI 根据你的工作量自动评估，**最低保证 85%**，无需手动填写。
+
+### 🏗️ 项目架构
+
+<img src="https://raw.githubusercontent.com/Song-JunYou/weekly-report-skill/main/docs/assets/architecture.png" alt="项目架构图" width="700"/>
+
+> 用户 → AI 解析 → Python 脚本 → 填充模板 → 生成文件。全程保留 Excel 格式。
 
 ---
 
