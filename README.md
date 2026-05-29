@@ -1,104 +1,208 @@
-# Weekly Report Skill (周报助手)
+# 周报助手 (Weekly Report Skill) for OpenCode
 
-## 目录结构
+> 告别手动填 Excel！和 AI 聊几句，周报自动生成。
 
-```
-weekly-report/
-├── SKILL.md                      # Skill 定义和交互规范
-├── README.md                     # 本文件
-├── evals/
-│   └── evals.json               # 测试用例
-├── scripts/
-│   └── generate_report.py       # Python 生成脚本
-└── templates/
-    └── 赛仕科工作周报模板.xlsx   # Excel 周报模板
-```
+一个 [OpenCode](https://opencode.ai) Skill，通过自然语言对话，自动将你的工作描述整理并填充到公司标准的 Excel 周报模板中。
 
-## 安装方法
+---
 
-### 方式一：复制到 OpenCode Skills 目录
+## 功能特性
 
-1. 将本 `weekly-report` 文件夹复制到 OpenCode 的 skills 目录：
+- **对话式交互** —— 不需要记模板格式，告诉 AI "我这周做了什么" 就行
+- **智能填充** —— 自动将工作归类到「上周完成 / 本周重点 / 下周计划」三大板块
+- **自动评估饱和度** —— AI 根据工作量自动计算工作饱和度，最低保证 **85%**
+- **保留模板样式** —— 使用 `openpyxl` 在原模板上填充，**不破坏任何格式和公式**
+- **文件名智能命名** —— 自动使用「姓名 + 完整周期范围」，如 `2026-05-25至2026-05-29`
+- **协作人追踪** —— 主动追问每条工作的协作人，避免遗漏
+- **确认后生成** —— 收集完所有信息并给你完整预览，确认无误再生成文件
+
+---
+
+## 快速开始
+
+### 1. 安装
+
+将本仓库克隆到 OpenCode 的 skills 目录：
 
 ```bash
 # Linux/macOS
-cp -r weekly-report ~/.config/opencode/superpowers/skills/
+git clone https://github.com/Song-JunYou/weekly-report-skill.git \
+  ~/.config/opencode/superpowers/skills/weekly-report
 
-# Windows
-xcopy /E /I weekly-report %USERPROFILE%\.config\opencode\superpowers\skills\
+# Windows (PowerShell)
+git clone https://github.com/Song-JunYou/weekly-report-skill.git \
+  $env:USERPROFILE\.config\opencode\superpowers\skills\weekly-report
 ```
 
-2. **重启 OpenCode**（关闭并重新打开），系统会自动扫描并加载新 Skill
+> 重启 OpenCode，系统会自动加载新 Skill。
 
-### 方式二：通过 OpenCode CLI 安装
+### 2. 使用
 
-```bash
-# 如果 OpenCode 支持 skill 安装命令
-opencode skill install weekly-report
+对 OpenCode 说任意一句：
+
+| 中文 | English |
+|------|---------|
+| "帮我写周报" | "weekly report" |
+| "写周报" | "fill my weekly report" |
+| "更新周报" | "update weekly report" |
+
+AI 会进入向导模式，按流程引导你：
+
+```
+1. 确认基本信息（周期、姓名、部门）
+2. 收集上周工作（内容、状态、成果、问题）
+3. 收集本周工作（内容、优先级、协作人、时间）
+4. 收集下周计划（同上）
+5. AI 自动评估饱和度（≥85%）+ 询问协调事项
+6. 完整预览，等你确认 "生成吧"
+7. 自动生成 Excel 文件到桌面
 ```
 
-## 使用方法
+---
 
-安装并重启后，直接对 OpenCode 说：
+## 项目结构
 
-- **"帮我写周报"**
-- **"写周报"**
-- **"weekly report"**
-- **"更新周报"**
-
-AI 会自动进入向导模式，按以下流程引导你：
-
-1. **确认基本信息**：周期、姓名、部门
-2. **收集上周工作**：工作内容、完成状态、成果、问题
-3. **收集本周工作**：工作内容、优先级、时间、协作人（必须问）
-4. **收集下周计划**：工作内容、优先级、时间、协作人（必须问）
-5. **饱和度评估**：AI 自动根据工作量评估（最低 85%）
-6. **询问协调事项**：需协调的资源、其他说明
-7. **预览确认**：展示所有信息，等待你确认
-8. **生成文件**：确认后自动生成 Excel 周报
-
-## 高级配置
-
-可通过环境变量自定义路径：
-
-```bash
-# 使用自定义模板（可选，默认使用 Skill 自带模板）
-export WKR_TEMPLATE_PATH="/path/to/your/template.xlsx"
-
-# 自定义输出目录（可选，默认桌面/周报/）
-export WKR_OUTPUT_DIR="/path/to/output/dir/"
 ```
+weekly-report-skill/
+├── SKILL.md                    # Skill 定义（交互规范、规则、工作流）
+├── README.md                   # 本文件
+├── .gitignore
+├── evals/
+│   └── evals.json              # 测试用例
+├── scripts/
+│   └── generate_report.py      # 核心生成脚本（openpyxl）
+└── templates/
+    └── 赛仕科工作周报模板.xlsx   # 内置 Excel 模板（随 Skill 自带）
+```
+
+---
 
 ## 模板说明
 
-本 Skill 自带标准周报模板 `赛仕科工作周报模板.xlsx`，包含以下板块：
+`赛仕科工作周报模板.xlsx` 包含以下板块：
 
-- **表头**：周期、姓名、部门
-- **上周工作完成情况**：序号、工作内容、时间、状态、成果、问题
-- **本周重要工作项**：序号、内容、优先级、时间、责任人、协作人
-- **下周工作计划**：同上
-- **工作饱和度评估**：饱和度（%）、负荷说明、协调资源、其他建议
+| 板块 | 字段 |
+|------|------|
+| **表头** | 周期、姓名、部门 |
+| **上周工作完成情况** | 工作内容、时间、状态、成果、问题、解决方案 |
+| **本周重要工作项** | 工作内容、优先级、时间、责任人、**协作人** |
+| **下周工作计划** | 同上 |
+| **工作饱和度评估** | 饱和度（%）、负荷说明、协调资源、其他建议 |
 
-## 依赖要求
-
-- Python 3.8+
-- openpyxl (`pip install openpyxl`)
-
-## 测试
+你也可以使用自己的模板：
 
 ```bash
-# 测试脚本
-python3 scripts/generate_report.py --test
+export WKR_TEMPLATE_PATH="/path/to/your/周报模板.xlsx"
 ```
 
-## 注意事项
+---
 
-- **必须先重启 OpenCode** 才能识别新安装的 Skill
-- Skill 采用向导式交互，必须等所有信息收集完成并确认后才生成文件
-- 饱和度由 AI 自动评估，最低不低于 85%
-- 文件名使用完整周期范围（如：`2026-05-25至2026-05-29`）
+## 配置选项
+
+通过环境变量自定义行为：
+
+| 环境变量 | 说明 | 默认值 |
+|----------|------|--------|
+| `WKR_TEMPLATE_PATH` | 自定义 Excel 模板路径 | Skill 自带模板 |
+| `WKR_OUTPUT_DIR` | 周报输出目录 | `~/Desktop/周报/` |
+
+---
+
+## 依赖
+
+- Python 3.8+
+- openpyxl
+
+```bash
+pip install openpyxl
+```
+
+---
+
+## 使用示例
+
+**场景一：自由描述**
+
+```
+用户：我这周搞定了数据迁移，还在搞 API 优化，下周要处理 bug。
+
+AI：好的！我记录一下。请再确认几个细节：
+  1. 数据迁移的完成状态？
+  2. API 优化预计什么时候完成？协作人是谁？
+  3. 下周处理 bug 的优先级？
+  ...（追问完毕，展示预览）
+  以上信息确认无误吗？确认后生成周报。
+
+用户：确认
+
+AI：周报已生成！📄 赛仕科工作周报 - OLIVER SONG 宋俊佑 2026-05-25至2026-05-29.xlsx
+```
+
+**场景二：向导模式**
+
+```
+用户：写周报
+
+AI：好的，我来帮你写周报！首先确认本周周期是 2026/5/25-5/29 吗？
+     ...（逐项引导，不跳过任何板块）
+```
+
+---
+
+## 核心设计
+
+### 为什么不用 pandas？
+
+因为周报模板通常带有：
+- 合并单元格（表头、标题）
+- 条件格式（优先级高亮）
+- 公式（进度条自动计算）
+- 公司 Logo 和样式
+
+`pandas` 生成的新文件会丢失这些格式。我们使用 `openpyxl` 直接**在原模板上修改**，保留一切样式。
+
+### 饱和度怎么算？
+
+AI 根据上周、本周、下周的工作量自动评估：
+
+| 工作量 | 饱和度 |
+|--------|--------|
+| 1-2 项 | 85% ~ 90% |
+| 3-4 项 | 90% ~ 95% |
+| 5 项以上 / 跨多项目 | 95% ~ 100% |
+
+**最低不低于 85%**，无需你手动填写。
+
+---
 
 ## 更新日志
 
-- **v1.1**: 修复饱和度自动评估、文件名格式、强制询问所有板块
-- **v1.0**: 初始版本，支持向导式周报生成
+| 版本 | 更新内容 |
+|------|----------|
+| v1.1 | 饱和度自动评估、文件名完整周期格式、强制询问所有板块 |
+| v1.0 | 初始版本，支持向导式周报生成 |
+
+---
+
+## 贡献
+
+欢迎 Issue 和 PR！
+
+- 发现 Bug → 提 [Issue](https://github.com/Song-JunYou/weekly-report-skill/issues)
+- 想支持其他模板格式 → 提 PR
+- 有功能建议 → 先开 Issue 讨论
+
+---
+
+## 鸣谢
+
+- 基于 [OpenCode](https://opencode.ai) 的 Superpowers Skill 框架开发
+- 模板样式感谢赛仕科（SATSHK）的标准化周报设计
+
+---
+
+<div align="center">
+
+Made with ☕ by [Song-JunYou](https://github.com/Song-JunYou)
+
+</div>
