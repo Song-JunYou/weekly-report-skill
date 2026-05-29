@@ -18,6 +18,28 @@
 
 ---
 
+## 一图看懂
+
+### 🔄 交互流程
+
+<img src="https://raw.githubusercontent.com/Song-JunYou/weekly-report-skill/main/docs/assets/workflow.png" alt="交互流程图" width="800"/>
+
+> 和 AI 聊 8 步，周报自动生成。不用记格式，不用手动填 Excel。
+
+### 🧠 饱和度怎么算的？
+
+<img src="https://raw.githubusercontent.com/Song-JunYou/weekly-report-skill/main/docs/assets/saturation.png" alt="饱和度计算逻辑" width="600"/>
+
+> AI 根据你的工作量自动评估，**最低保证 85%**，无需手动填写。
+
+### 🏗️ 项目架构
+
+<img src="https://raw.githubusercontent.com/Song-JunYou/weekly-report-skill/main/docs/assets/architecture.png" alt="项目架构图" width="700"/>
+
+> 用户 → AI 解析 → Python 脚本 → 填充模板 → 生成文件。全程保留 Excel 格式。
+
+---
+
 ## 快速开始
 
 ### 1. 安装
